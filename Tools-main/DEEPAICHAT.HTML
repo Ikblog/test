@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fast & Furious Chat with Dom</title>
+  <title>Blog Buddy - Your Expert Blogging Assistant</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .chat-container {
@@ -48,14 +48,14 @@
     }
   </style>
 </head>
-<body class="bg-gray-900 text-white flex flex-col min-h-screen">
-  <header class="bg-black py-4 border-b border-gray-700">
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+  <header class="bg-indigo-900 py-4 border-b border-indigo-700 text-white">
     <div class="container mx-auto px-4 flex items-center justify-between">
       <div class="flex items-center">
-        <span class="text-2xl font-bold text-red-600">DEEPAI CHATBOT</span>
-        <span class="text-xl ml-2 hidden sm:inline">Chat with Dom</span>
+        <span class="text-2xl font-bold text-white">Blog Buddy</span>
+        <span class="text-xl ml-2 hidden sm:inline">Your Expert Assistant</span>
       </div>
-      <button id="themeToggle" class="p-2 rounded-full bg-gray-800 hover:bg-gray-700 focus:outline-none">
+      <button id="themeToggle" class="p-2 rounded-full bg-indigo-800 hover:bg-indigo-700 focus:outline-none">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
         </svg>
@@ -64,15 +64,15 @@
   </header>
 
   <div class="flex-grow container mx-auto py-6 px-4 chat-container">
-    <div class="h-full w-full max-w-2xl mx-auto bg-black bg-opacity-70 rounded-lg overflow-hidden shadow-xl border border-gray-700">
-      <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+    <div class="h-full w-full max-w-3xl mx-auto bg-white rounded-lg overflow-hidden shadow-xl border border-gray-200">
+      <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-indigo-50">
         <div class="flex items-center">
-          <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center">
-            <span class="font-bold text-lg">D</span>
+          <div class="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center">
+            <span class="font-bold text-lg text-white">B</span>
           </div>
           <div class="ml-3">
-            <p class="font-bold">MY PADDY</p>
-            <p class="text-xs text-gray-400">MY PADDY</p>
+            <p class="font-bold">Blogging Assistant</p>
+            <p class="text-xs text-gray-500">SEO & Content Expert</p>
           </div>
         </div>
         <div class="bg-green-500 rounded-full h-3 w-3"></div>
@@ -80,17 +80,17 @@
       
       <div id="chatbox" class="flex flex-col overflow-y-auto p-4 h-96"></div>
       
-      <div class="border-t border-gray-700 p-4">
+      <div class="border-t border-gray-200 p-4 bg-indigo-50">
         <div class="flex flex-col space-y-3">
           <div class="flex items-center">
             <input
-              class="flex-grow rounded-l-lg p-3 bg-gray-800 text-white border-none focus:outline-none focus:ring-2 focus:ring-red-500"
+              class="flex-grow rounded-l-lg p-3 bg-white text-gray-800 border border-gray-300 border-r-0 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               id="messageInput"
               type="text"
-              placeholder="Type your message to Dom..."
+              placeholder="Ask about blog topics, SEO tips, or content ideas..."
             />
             <button
-              class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-r-lg transition-colors duration-200"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-r-lg transition-colors duration-200"
               id="sendButton"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,19 +98,27 @@
               </svg>
             </button>
           </div>
-          <button
-            class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
-            id="clearButton"
-          >
-            Clear Conversation
-          </button>
+          <div class="flex space-x-2">
+            <button
+              class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-sm flex-grow"
+              id="clearButton"
+            >
+              Clear Conversation
+            </button>
+            <button
+              class="bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-sm flex-grow"
+              id="suggestButton"
+            >
+              Get Blog Ideas
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
   
-  <footer class="bg-black py-3 text-center text-gray-500 text-sm">
-    <p>Ride or die. Remember: The most important thing in life will always be family.</p>
+  <footer class="bg-indigo-900 py-3 text-center text-indigo-200 text-sm">
+    <p>Your ultimate companion for creating engaging, SEO-optimized blog content</p>
   </footer>
 
   <script>
@@ -118,21 +126,36 @@
     const messageInput = document.getElementById("messageInput");
     const sendButton = document.getElementById("sendButton");
     const clearButton = document.getElementById("clearButton");
+    const suggestButton = document.getElementById("suggestButton");
     const themeToggle = document.getElementById("themeToggle");
     const chatId = crypto.randomUUID();
     let websocket = null;
-    let darkMode = true;
+    let darkMode = false;
 
     let receiving = false;
-    // Enhanced Dom Toretto prompt
-    const systemPrompt = `You are a devoted teacher of the Bible, sharing wisdom from Scripture with a strong, authoritative voice. You emphasize faith, obedience, and God’s love in your responses. You have deep knowledge of the Bible, including its teachings, history, and key figures. Your responses should include references to biblical stories, parables, and verses. You might use phrases like 'Walk by faith, not by sight,' 'With God, all things are possible,' or 'The fear of the Lord is the beginning of wisdom.' You speak with conviction, always pointing others toward God’s truth. Keep responses clear, encouraging, and rooted in Scripture.`;
+    // Blogging assistant prompt
+    const systemPrompt = `You are an expert blogging assistant, skilled in generating in-depth, high-quality articles of 1500+ words. You have extensive knowledge of SEO, content marketing, and engaging writing styles. Your responses should include well-structured content with headings, subheadings, examples, and actionable insights. You might reference best practices such as keyword optimization, readability, and audience engagement. You are informative, clear, and value delivering well-researched, valuable content. Keep responses detailed, practical, and structured to help bloggers create compelling, high-ranking articles.`;
 
     // Theme toggle functionality
     themeToggle.addEventListener("click", () => {
-      document.body.classList.toggle("bg-gray-100");
+      document.body.classList.toggle("bg-gray-50");
       document.body.classList.toggle("bg-gray-900");
-      document.body.classList.toggle("text-black");
+      document.body.classList.toggle("text-gray-800");
       document.body.classList.toggle("text-white");
+      
+      const messageElements = document.querySelectorAll('.message-bubble');
+      messageElements.forEach(el => {
+        if (el.classList.contains('self-end')) {
+          el.classList.toggle('bg-indigo-600');
+          el.classList.toggle('bg-indigo-400');
+        } else {
+          el.classList.toggle('bg-gray-200');
+          el.classList.toggle('bg-gray-700');
+          el.classList.toggle('text-gray-800');
+          el.classList.toggle('text-white');
+        }
+      });
+      
       darkMode = !darkMode;
     });
 
@@ -140,8 +163,8 @@
     function createMessageElement(text, alignment) {
       const messageElement = document.createElement("div");
       const messageClass = alignment === "left" 
-        ? "self-start bg-gray-800 text-white" 
-        : "self-end bg-red-600 text-white";
+        ? "self-start bg-gray-200 text-gray-800" 
+        : "self-end bg-indigo-600 text-white";
       
       messageElement.className = `message-bubble inline-block my-2.5 p-3 rounded-lg shadow ${messageClass}`;
       
@@ -177,7 +200,7 @@
             chatId: chatId,
             appId: "ahead-less",
             systemPrompt: systemPrompt,
-            message: initChat ? "A short welcome message from Dominic Toretto mentioning family and cars" : message,
+            message: initChat ? "Introduce yourself as a blogging assistant and offer 3 ways you can help" : message,
           })
         );
       });
@@ -252,9 +275,24 @@
       createWelcomeMessage();
     });
 
+    // Blog idea suggestions
+    suggestButton.addEventListener("click", () => {
+      if (!receiving) {
+        const suggestions = [
+          "Suggest 5 blog topics that would rank well in the tech industry",
+          "How do I structure a blog post for maximum SEO impact?",
+          "What are the latest content marketing trends I should know about?",
+          "Give me an outline for a comprehensive guide on social media marketing",
+          "How can I improve my blog's readability and engagement?"
+        ];
+        const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+        messageInput.value = randomSuggestion;
+      }
+    });
+
     // Display saved messages from localStorage
     function loadSavedMessages() {
-      const savedMessages = localStorage.getItem('domMessages');
+      const savedMessages = localStorage.getItem('blogMessages');
       if (savedMessages) {
         try {
           const messages = JSON.parse(savedMessages);
@@ -265,6 +303,7 @@
           chatbox.scrollTop = chatbox.scrollHeight;
         } catch (e) {
           console.error('Error loading saved messages', e);
+          createWelcomeMessage();
         }
       } else {
         createWelcomeMessage();
@@ -277,7 +316,7 @@
         text: el.textContent,
         alignment: el.classList.contains('self-end') ? 'right' : 'left'
       }));
-      localStorage.setItem('domMessages', JSON.stringify(messages));
+      localStorage.setItem('blogMessages', JSON.stringify(messages));
     }
 
     // Regularly save messages
@@ -285,18 +324,6 @@
 
     // Load saved messages or create welcome message
     loadSavedMessages();
-
-    // Add sound effects
-    function playSound(type) {
-      const audio = new Audio();
-      audio.volume = 0.3;
-      if (type === 'send') {
-        // Engine rev sound would go here
-      } else if (type === 'receive') {
-        // Car passing sound would go here
-      }
-      audio.play().catch(e => console.log('Audio play prevented:', e));
-    }
   </script>
 </body>
 </html>
