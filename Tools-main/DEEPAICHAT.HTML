@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fast & Furious Chat with Dom</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.3/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    .chat-container {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/api/placeholder/1200/800');
+      background-size: cover;
+      background-position: center;
+    }
+    .message-bubble {
+      max-width: 80%;
+      word-wrap: break-word;
+      transition: all 0.3s ease;
+    }
+    .message-bubble:hover {
+      transform: translateY(-2px);
+    }
+    .typing-indicator {
+      display: inline-block;
+    }
+    .typing-indicator span {
+      height: 10px;
+      width: 10px;
+      float: left;
+      margin: 0 1px;
+      background-color: #9880ff;
+      display: block;
+      border-radius: 50%;
+      opacity: 0.4;
+    }
+    .typing-indicator span:nth-of-type(1) {
+      animation: 1s blink infinite 0.3333s;
+    }
+    .typing-indicator span:nth-of-type(2) {
+      animation: 1s blink infinite 0.6666s;
+    }
+    .typing-indicator span:nth-of-type(3) {
+      animation: 1s blink infinite 0.9999s;
+    }
+    @keyframes blink {
+      50% {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-white flex flex-col min-h-screen">
+  <header class="bg-black py-4 border-b border-gray-700">
+    <div class="container mx-auto px-4 flex items-center justify-between">
+      <div class="flex items-center">
+        <span class="text-2xl font-bold text-red-600">DEEPAI CHATBOT</span>
+        <span class="text-xl ml-2 hidden sm:inline">Chat with Dom</span>
+      </div>
+      <button id="themeToggle" class="p-2 rounded-full bg-gray-800 hover:bg-gray-700 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="flex-grow container mx-auto py-6 px-4 chat-container">
+    <div class="h-full w-full max-w-2xl mx-auto bg-black bg-opacity-70 rounded-lg overflow-hidden shadow-xl border border-gray-700">
+      <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+        <div class="flex items-center">
+          <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center">
+            <span class="font-bold text-lg">D</span>
+          </div>
+          <div class="ml-3">
+            <p class="font-bold">MY PADDY</p>
+            <p class="text-xs text-gray-400">MY PADDY</p>
+          </div>
+        </div>
+        <div class="bg-green-500 rounded-full h-3 w-3"></div>
+      </div>
+      
+      <div id="chatbox" class="flex flex-col overflow-y-auto p-4 h-96"></div>
+      
+      <div class="border-t border-gray-700 p-4">
+        <div class="flex flex-col space-y-3">
+          <div class="flex items-center">
+            <input
+              class="flex-grow rounded-l-lg p-3 bg-gray-800 text-white border-none focus:outline-none focus:ring-2 focus:ring-red-500"
+              id="messageInput"
+              type="text"
+              placeholder="Type your message to Dom..."
+            />
+            <button
+              class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-r-lg transition-colors duration-200"
+              id="sendButton"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </button>
+          </div>
+          <button
+            class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
+            id="clearButton"
+          >
+            Clear Conversation
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="bg-black py-3 text-center text-gray-500 text-sm">
+    <p>Ride or die. Remember: The most important thing in life will always be family.</p>
+  </footer>
+
+  <script>
+    const chatbox = document.getElementById("chatbox");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const clearButton = document.getElementById("clearButton");
+    const themeToggle = document.getElementById("themeToggle");
+    const chatId = crypto.randomUUID();
+    let websocket = null;
+    let darkMode = true;
+
+    let receiving = false;
+    // Enhanced Dom Toretto prompt
+    const systemPrompt = `You are a devoted teacher of the Bible, sharing wisdom from Scripture with a strong, authoritative voice. You emphasize faith, obedience, and God’s love in your responses. You have deep knowledge of the Bible, including its teachings, history, and key figures. Your responses should include references to biblical stories, parables, and verses. You might use phrases like 'Walk by faith, not by sight,' 'With God, all things are possible,' or 'The fear of the Lord is the beginning of wisdom.' You speak with conviction, always pointing others toward God’s truth. Keep responses clear, encouraging, and rooted in Scripture.`;
+
+    // Theme toggle functionality
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("bg-gray-100");
+      document.body.classList.toggle("bg-gray-900");
+      document.body.classList.toggle("text-black");
+      document.body.classList.toggle("text-white");
+      darkMode = !darkMode;
+    });
+
+    // Create message with typing animation
+    function createMessageElement(text, alignment) {
+      const messageElement = document.createElement("div");
+      const messageClass = alignment === "left" 
+        ? "self-start bg-gray-800 text-white" 
+        : "self-end bg-red-600 text-white";
+      
+      messageElement.className = `message-bubble inline-block my-2.5 p-3 rounded-lg shadow ${messageClass}`;
+      
+      if (text === "") {
+        // Show typing indicator if empty
+        const typingIndicator = document.createElement("div");
+        typingIndicator.className = "typing-indicator";
+        for (let i = 0; i < 3; i++) {
+          const dot = document.createElement("span");
+          typingIndicator.appendChild(dot);
+        }
+        messageElement.appendChild(typingIndicator);
+      } else {
+        messageElement.textContent = text;
+      }
+      
+      return messageElement;
+    }
+
+    // WebSocket connection function
+    function connectWebSocket(message, initChat) {
+      receiving = true;
+      sendButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>`;
+      
+      const url = "wss://backend.buildpicoapps.com/api/chatbot/chat";
+      websocket = new WebSocket(url);
+
+      websocket.addEventListener("open", () => {
+        websocket.send(
+          JSON.stringify({
+            chatId: chatId,
+            appId: "ahead-less",
+            systemPrompt: systemPrompt,
+            message: initChat ? "A short welcome message from Dominic Toretto mentioning family and cars" : message,
+          })
+        );
+      });
+
+      const messageElement = createMessageElement("", "left");
+      chatbox.appendChild(messageElement);
+
+      let responseText = "";
+      
+      websocket.onmessage = (event) => {
+        // Remove typing indicator on first message
+        if (responseText === "") {
+          messageElement.innerHTML = "";
+        }
+        
+        responseText += event.data;
+        messageElement.textContent = responseText;
+        chatbox.scrollTop = chatbox.scrollHeight;
+      };
+
+      websocket.onclose = (event) => {
+        if (event.code === 1000) {
+          receiving = false;
+          sendButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>`;
+        } else {
+          messageElement.textContent = "Connection lost. Try refreshing the page.";
+          receiving = false;
+          sendButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          </svg>`;
+        }
+      };
+    }
+
+    // Create welcome message
+    function createWelcomeMessage() {
+      setTimeout(() => {
+        connectWebSocket("", true);
+      }, 500);
+    }
+
+    // Event listeners
+    sendButton.addEventListener("click", () => {
+      if (!receiving && messageInput.value.trim() !== "") {
+        const messageText = messageInput.value.trim();
+        messageInput.value = "";
+        const messageElement = createMessageElement(messageText, "right");
+        chatbox.appendChild(messageElement);
+        chatbox.scrollTop = chatbox.scrollHeight;
+
+        connectWebSocket(messageText, false);
+      } else if (receiving && websocket) {
+        websocket.close(1000);
+        receiving = false;
+        sendButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+        </svg>`;
+      }
+    });
+
+    messageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !receiving && messageInput.value.trim() !== "") {
+        event.preventDefault();
+        sendButton.click();
+      }
+    });
+
+    clearButton.addEventListener("click", () => {
+      chatbox.innerHTML = "";
+      createWelcomeMessage();
+    });
+
+    // Display saved messages from localStorage
+    function loadSavedMessages() {
+      const savedMessages = localStorage.getItem('domMessages');
+      if (savedMessages) {
+        try {
+          const messages = JSON.parse(savedMessages);
+          messages.forEach(msg => {
+            const element = createMessageElement(msg.text, msg.alignment);
+            chatbox.appendChild(element);
+          });
+          chatbox.scrollTop = chatbox.scrollHeight;
+        } catch (e) {
+          console.error('Error loading saved messages', e);
+        }
+      } else {
+        createWelcomeMessage();
+      }
+    }
+
+    // Save messages to localStorage
+    function saveMessages() {
+      const messages = Array.from(chatbox.children).map(el => ({
+        text: el.textContent,
+        alignment: el.classList.contains('self-end') ? 'right' : 'left'
+      }));
+      localStorage.setItem('domMessages', JSON.stringify(messages));
+    }
+
+    // Regularly save messages
+    setInterval(saveMessages, 5000);
+
+    // Load saved messages or create welcome message
+    loadSavedMessages();
+
+    // Add sound effects
+    function playSound(type) {
+      const audio = new Audio();
+      audio.volume = 0.3;
+      if (type === 'send') {
+        // Engine rev sound would go here
+      } else if (type === 'receive') {
+        // Car passing sound would go here
+      }
+      audio.play().catch(e => console.log('Audio play prevented:', e));
+    }
+  </script>
+</body>
+</html>
